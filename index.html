@@ -21,7 +21,7 @@ $('favorites').innerHTML=favorites.map((p,i)=>`<div class="favorite"><div><butto
 async function refreshEisbach(){
  const el=$('eisbach-reading');if(!el)return;
  try{
-  const r=await fetch('./data/eisbach.json?_='+Math.floor(Date.now()/600000),{cache:'no-store'});
+  const r=await fetch('https://raw.githubusercontent.com/passiweather/Passi-Weather/main/data/eisbach.json?_='+Date.now(),{cache:'no-store'});
   if(!r.ok)throw Error('Keine Datendatei');
   const d=await r.json();
   if(!d.observed_at || typeof d.water_level_cm!=='number')throw Error('Kein Messwert');
@@ -29,7 +29,7 @@ async function refreshEisbach(){
   const age=(Date.now()-when.getTime())/3600000;
   if(!Number.isFinite(age)||age < -2||age>6){el.textContent='Keine aktuellen Messwerte verfügbar · letzte Messung: '+d.observed_at_label;return;}
   el.innerHTML=`Wasserstand: <b>${d.water_level_cm} cm</b>${typeof d.discharge_m3s==='number'?` · Abfluss: <b>${d.discharge_m3s.toLocaleString('de-DE')} m³/s</b>`:''}<br>Messung: ${d.observed_at_label} · Quelle: GKD/HND Bayern`;
- }catch(e){el.textContent='Noch kein aktueller Pegelwert geladen. Bitte GitHub Actions → Eisbach Pegel aktualisieren → Run workflow ausführen.';}
+ }catch(e){el.textContent='Kein aktueller Pegelwert verfügbar. Bitte Messwerte bei GKD Bayern prüfen.';}
 }
 async function marineWave(lat,lon){
  const url=`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=wave_height,swell_wave_height,wave_period,wave_direction&timezone=Europe%2FLisbon&cell_selection=sea&_=${Date.now()}`;
@@ -48,7 +48,7 @@ async function loadSpecialValues(){
  const set=(i,markup)=>{const el=$('special-'+i);if(el)el.innerHTML=markup};
  const gkd='https://www.gkd.bayern.de/de/fluesse/wasserstand/kelheim/muenchen-himmelreichbruecke-16515005/messwerte';
  set(0,'<strong>🌊 Sagres Westküste</strong><small>Wellenprognose wird geladen …</small>');
- set(1,`<strong>💧 Eisbach-Pegel</strong><a href="${gkd}" target="_blank" rel="noopener noreferrer">GKD-Messstelle ↗</a><small id="eisbach-reading" style="display:block;color:#8ea5bb">Messwerte werden geladen …</small>`);
+ set(1,`<strong>💧 Eisbach-Pegel</strong><a href="${gkd}" target="_blank" rel="noopener noreferrer">GKD-Messstelle ↗</a><small id="eisbach-reading" style="display:block;color:#8ea5bb">Messwerte aus Passi-Weather werden geladen …</small>`);
  set(2,'<strong>❄️ Kitzbühel</strong><small>Schneemodell wird geladen …</small>');
  set(3,'<strong>❄️ Stubai · Tal und Berg</strong><small>Schneemodell wird geladen …</small>');
 
